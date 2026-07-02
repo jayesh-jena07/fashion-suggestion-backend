@@ -13,16 +13,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Disable CSRF tracking for H2 console using plain strings
+                // 1. Disable CSRF tracking for H2 console and our API endpoints
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**")
+                        .ignoringRequestMatchers("/h2-console/**", "/api/**")
                 )
-                // 2. Allow public access to the H2 console paths
+                // 2. Open up permissions for H2 and our API routes
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().permitAll() // Permit all other endpoints for local development
+                        .requestMatchers("/api/**").permitAll() // ◄— This opens up our new endpoints!
+                        .anyRequest().authenticated()
                 )
-                // 3. Allow frames from the same origin so H2 UI can render
+                // 3. Keep frame options allowed for H2 UI panels
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
                 );

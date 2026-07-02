@@ -1,0 +1,72 @@
+[ User Uploads Selfie ]
+           │
+           ▼
+┌──────────────────────────────┐
+│  1. Spring Boot Backend      │ ──► Receives image via Multipart File Request
+└──────────────────────────────┘
+           │
+           │ (Passes Image File/Path)
+           ▼
+┌──────────────────────────────┐
+│  2. Python AI Service        │ ──► Runs OpenCV / Mediapipe Face Detection
+└──────────────────────────────┘
+           │
+           ▼
+ ┌────────────────────────────┐
+ │ Extract Skin RGB/HEX Color │
+ └────────────────────────────┘
+           │
+           ▼
+ ┌────────────────────────────┐
+ │ Determine Skin Undertone   │ ──► (Cool, Warm, Neutral)
+ └────────────────────────────┘
+           │
+           ▼
+ ┌────────────────────────────┐
+ │ Map to Complementary Colors│ ──► Generates list: ["Olive Green", "Beige", "Burgundy"]
+ └────────────────────────────┘
+           │
+           │ (Returns JSON Array of Colors)
+           ▼
+┌──────────────────────────────┐
+│  3. Spring Boot Backend      │ ──► Receives color array and begins processing
+└──────────────────────────────┘
+           │
+           ├──────────────────────────────┐
+           ▼                              ▼
+ ┌──────────────────┐           ┌──────────────────┐
+ │  Query for TOPS  │           │  Query for PANTS │
+ └──────────────────┘           └──────────────────┘
+           │                              │
+           └──────────────┬───────────────┘
+                          │
+                          ▼
+┌──────────────────────────────┐
+│  4. H2 Database Execution    │ ──► Runs: SELECT * FROM product_inventory
+└──────────────────────────────┘     WHERE category = ? AND color IN (...)
+           │
+           ▼
+┌──────────────────────────────┐
+│  5. Spring Boot Aggregator   │ ──► Packs matched Myntra/Ajio product rows
+└──────────────────────────────┘     into a single OutfitRecommendationDTO
+           │
+           │ (Sends Structured JSON Payload)
+           ▼
+ [ Frontend Shows Curated Catalog with Shopping Links ]
+
+ ----WORKFLOW
+ 📷 1. User uploads a selfie via a REST API endpoint.
+                      │
+                      ▼
+  🐍 2. Spring Boot sends that image file directly to a Python service.
+                      │
+                      ▼
+  🤖 3. Python analyzes the skin tones using OpenCV & color-theory libraries.
+                      │
+                      ▼
+  🎨 4. Python returns a JSON payload back to Spring Boot:
+        { "undertone": "Warm", "colors": ["Olive Green", "Beige", "Burgundy"] }
+                      │
+                      ▼
+  ☕ 5. Spring Boot extracts those values and invokes:
+        getRecommendations("Warm", List.of("Olive Green", "Beige", "Burgundy"));
