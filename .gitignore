@@ -31,3 +31,19 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Python virtual environment
+ai/env/
+ai/venv/
+__pycache__/
+*.pyc
+
+# Spring Boot / Java build files
+target/
+.gradle/
+build/
+*.class
+
+# IDE settings
+.idea/
+*.iml
