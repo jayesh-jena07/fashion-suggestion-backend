@@ -6,6 +6,7 @@ import com.example.FashionRecommendationApp.repository.ProductInventoryRepositor
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FashionRecommendationService {
@@ -22,13 +23,18 @@ public class FashionRecommendationService {
      * queries the database for Tops and Pants, and returns a structured response.
      */
     public RecommendationResponse getRecommendations(String undertone, List<String> matchingColors) {
-        // 1. Fetch matching Tops from the H2 database
-        List<ProductInventory> tops = inventoryRepository.findByCategoryAndColorIn("Top", matchingColors);
 
-        // 2. Fetch matching Pants from the H2 database
-        List<ProductInventory> pants = inventoryRepository.findByCategoryAndColorIn("Pants", matchingColors);
+        // Convert all colors coming from the AI script to lowercase safely
+        List<String> lowerCaseColors = matchingColors.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
 
-        // 3. Wrap everything cleanly inside our Data Transfer Object (DTO)
+        // 1. Fetch matching Tops from the database
+        List<ProductInventory> tops = inventoryRepository.findByCategoryAndColorIn("Top", lowerCaseColors);
+
+        // 2. Fetch matching Pants from the database
+        List<ProductInventory> pants = inventoryRepository.findByCategoryAndColorIn("Pants", lowerCaseColors);
+
         return new RecommendationResponse(undertone, tops, pants);
     }
 }

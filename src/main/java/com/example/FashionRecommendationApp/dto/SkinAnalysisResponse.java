@@ -1,7 +1,14 @@
 package com.example.FashionRecommendationApp.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class SkinAnalysisResponse {
     private String undertone;
     private List<String> matchingColors;
