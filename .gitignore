@@ -46,4 +46,5 @@ build/
 
 # IDE settings
 .idea/
-*.iml
+*.imlai/env/
+temp_scraped_product.jpg
